@@ -123,13 +123,13 @@ export const orderImport = {
   sortRDAsc: (data, tabActive) => {
     if (tabActive === "Movies") {
       return data.sort((a, b) => a.release_date - b.release_date);
-    } 
+    }
   },
 
   sortRDDesc: (data, tabActive) => {
     if (tabActive === "Movies") {
       return data.sort((a, b) => b.release_date - a.release_date);
-    } 
+    }
   },
 };
 
@@ -160,7 +160,7 @@ export const searchImport = {
   searchVehiclesByName: (searchString, data) => {
     if (searchString.length > 2) {
       return data.filter((element) => {
-        return element.name.toLowerCase().includes(searchString.toLowerCase());
+        return element.vehicle_class.toLowerCase().includes(searchString.toLowerCase());
       });
     }
     return data;

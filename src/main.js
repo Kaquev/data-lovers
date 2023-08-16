@@ -40,27 +40,34 @@ const inputSearch = document.getElementById("input-search");
 
 //Data recogida en un array
 const filmsData = data.films; //Variable que contiene la data del array 'films'.
+let filmsDataFiltered = filmsData;
 
 const peopleData = []; //Variable con array vacio
+let peopleDataFiltered = [];
 data.films.forEach((element) => {
   element.people.forEach((row) => {
     peopleData.push(row);
   });
 }); //Se para la información por un bucle con el método .forEach. Por cada elemento de la propiedad 'people', se crea otro bucle con .forEach que toma cada uno de los elementos y con el método .push() los añade a a la varible con el array vacío. De esta manera todos los elementos de 'people' quedarían dentro de un array.
+peopleDataFiltered = peopleData;
 
 const vehiclesData = [];
+let vehiclesDataFiltered = [];
 data.films.forEach((element) => {
   element.vehicles.forEach((row) => {
     vehiclesData.push(row);
   });
 }); //Se repite el procedimiento anterior con los vehículos.
+vehiclesDataFiltered = vehiclesData;
 
 const locationsData = [];
+let locationsDataFiltered = [];
 data.films.forEach((element) => {
   element.locations.forEach((row) => {
     locationsData.push(row);
   });
 }); //Se repite el procedimiento anterior con las locaciones.
+locationsDataFiltered = locationsData;
 
 //Pestaña a pestaña
 // Con querySelectorAll se llaman a todos los elementos que cumplan con el atrubuto 'data-tab' en las etiquetas 'a'(enlace).
@@ -172,13 +179,19 @@ inputSearch.addEventListener("keyup", function (event) {
 //DOM de filtros
 
 filterProducerDirector.addEventListener("change", function (event) {
-  createFilms(
-    filterImport.filterForProducersAndDirectors(
-      filmsData,
-      event.target.value,
-      event.target[event.target.selectedIndex].dataset.id,
-    ),
+  filmsDataFiltered = filterImport.filterForProducersAndDirectors(
+    filmsData,
+    event.target.value,
+    event.target[event.target.selectedIndex].dataset.id,
   );
+  if (filter.selectedIndex > 0) {
+    const changeEvent = new Event("change");
+    filter.dispatchEvent(changeEvent);
+  } else {
+    createFilms(filmsDataFiltered);
+  }
+  // yo debería ser capaz de ordenar de acuerdo a si hay algo seleccionado
+
   // se captura el data id de cada option para hacer un if en la función que filtra
   // le pasamos como parametro 3 el option seleccionado del select, es decir el que el
   //usuario selecciono y eso se hace con el indice de event.target.selectedIndex
@@ -187,21 +200,67 @@ filterProducerDirector.addEventListener("change", function (event) {
 });
 
 filterMovies.addEventListener("change", function (event) {
-  printDataCharacters(
-    filterImport.filterForMovies(filmsData, event.target.value)[0].people,
-  );
+  if (filterMovies.selectedIndex > 1) {
+    peopleDataFiltered = filterImport.filterForMovies(filmsData, event.target.value)[0].people;
+  } else {
+    peopleDataFiltered = peopleData;
+  }
+  if (filterCharacterGender.selectedIndex > 0) {
+    peopleDataFiltered = filterImport.filterForCharacterGender(
+      peopleDataFiltered, filterCharacterGender.value
+    );
+  }
+  if (filterCharacterSpecie.selectedIndex > 0) {
+    peopleDataFiltered = filterImport.filterForCharacterSpecie(
+      peopleDataFiltered, filterCharacterSpecie.value
+    );
+  }
+  if (filter.selectedIndex > 0) {
+    const changeEvent = new Event("change");
+    filter.dispatchEvent(changeEvent);
+  } else {
+    printDataCharacters(peopleDataFiltered);
+  }
 });
 
 filterCharacterGender.addEventListener("change", function (event) {
-  printDataCharacters(
-    filterImport.filterForCharacterGender(peopleData, event.target.value),
-  );
+  if (filterMovies.selectedIndex > 1) {
+    peopleDataFiltered = filterImport.filterForMovies(filmsData, filterMovies.value)[0].people;
+  } else {
+    peopleDataFiltered = peopleData;
+  }
+  if (filterCharacterSpecie.selectedIndex > 0) {
+    peopleDataFiltered = filterImport.filterForCharacterSpecie(
+      peopleDataFiltered, filterCharacterSpecie.value
+    );
+  }
+  peopleDataFiltered = filterImport.filterForCharacterGender(peopleDataFiltered, event.target.value);
+  if (filter.selectedIndex > 0) {
+    const changeEvent = new Event("change");
+    filter.dispatchEvent(changeEvent);
+  } else {
+    printDataCharacters(peopleDataFiltered);
+  }
 });
 
 filterCharacterSpecie.addEventListener("change", function (event) {
-  printDataCharacters(
-    filterImport.filterForCharacterSpecie(peopleData, event.target.value),
-  );
+  if (filterMovies.selectedIndex > 1) {
+    peopleDataFiltered = filterImport.filterForMovies(filmsData, filterMovies.value)[0].people;
+  } else {
+    peopleDataFiltered = peopleData;
+  }
+  if (filterCharacterGender.selectedIndex > 0) {
+    peopleDataFiltered = filterImport.filterForCharacterGender(
+      peopleDataFiltered, filterCharacterGender.value
+    );
+  }
+  peopleDataFiltered = filterImport.filterForCharacterSpecie(peopleDataFiltered, event.target.value);
+  if (filter.selectedIndex > 0) {
+    const changeEvent = new Event("change");
+    filter.dispatchEvent(changeEvent);
+  } else {
+    printDataCharacters(peopleDataFiltered);
+  }
 });
 
 filterVehicleClass.addEventListener("change", function (event) {
@@ -230,8 +289,7 @@ filterLocationTerrain.addEventListener("change", function (event) {
 // Target es atributo de select al igual que value, los que capturan el valor
 
 filter.addEventListener("change", function (event) {
-  const tabActive =
-    document.querySelectorAll("a[data-tab].active")[0].innerText;
+  const tabActive = document.querySelectorAll("a[data-tab].active")[0].innerText;
   if (event.target.value === "") {
     // si el valor que obtengo es "nada"
     // validar que debemos hacer cuando no seleccione nada
@@ -260,9 +318,9 @@ filter.addEventListener("change", function (event) {
 // y para saber en que pestaña se encuentra el usuario.
 function callOrderAZ(tabActive) {
   if (tabActive === "Movies") {
-    createFilms(orderImport.sortAToZTitle(filmsData, tabActive));
+    createFilms(orderImport.sortAToZTitle(filmsDataFiltered, tabActive));
   } else if (tabActive === "Characters") {
-    printDataCharacters(orderImport.sortAToZTitle(peopleData, tabActive));
+    printDataCharacters(orderImport.sortAToZTitle(peopleDataFiltered, tabActive));
   } else if (tabActive === "Vehicles") {
     createVehicles(orderImport.sortAToZTitle(vehiclesData, tabActive));
   } else {
@@ -272,9 +330,9 @@ function callOrderAZ(tabActive) {
 
 function callOrderZA(tabActive) {
   if (tabActive === "Movies") {
-    createFilms(orderImport.sortZToATitle(filmsData, tabActive));
+    createFilms(orderImport.sortZToATitle(filmsDataFiltered, tabActive));
   } else if (tabActive === "Characters") {
-    printDataCharacters(orderImport.sortZToATitle(peopleData, tabActive));
+    printDataCharacters(orderImport.sortZToATitle(peopleDataFiltered, tabActive));
   } else if (tabActive === "Vehicles") {
     createVehicles(orderImport.sortZToATitle(vehiclesData, tabActive));
   } else {
@@ -284,13 +342,13 @@ function callOrderZA(tabActive) {
 
 function callDateAsc(tabActive) {
   if (tabActive === "Movies") {
-    createFilms(orderImport.sortRDAsc(filmsData, tabActive));
-  } 
+    createFilms(orderImport.sortRDAsc(filmsDataFiltered, tabActive));
+  }
 }
 
 function callDateDesc(tabActive) {
   if (tabActive === "Movies") {
-    createFilms(orderImport.sortRDDesc(filmsData, tabActive));
+    createFilms(orderImport.sortRDDesc(filmsDataFiltered, tabActive));
   }
 }
 
