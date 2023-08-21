@@ -14,29 +14,34 @@ const locationsRoot = document.getElementById("locations-small-container");
 const filter = document.getElementById("button-filter");
 const ascOption = document.getElementById("asc");
 const descOption = document.getElementById("desc");
-const filterProducerDirector = document.getElementById(
-  "button-filter-prodirect",
-);
-const filterProducerDirectorContainer = document.getElementById(
-  "container-filter-productors-directors",
-);
+const filterProducerDirector = document.getElementById("button-filter-prodirect",);
+const filterProducerDirectorContainer = document.getElementById("container-filter-productors-directors",);
 const filterMovies = document.getElementById("button-filter-movie");
-const filterCharacterGender = document.getElementById(
-  "button-filter-character-gender",
-);
-const filterCharacterSpecie = document.getElementById(
-  "button-filter-character-specie",
-);
-const filterVehicleClass = document.getElementById(
-  "button-filter-vehicle-class",
-);
-const filterLocationClimate = document.getElementById(
-  "button-filter-location-climate",
-);
-const filterLocationTerrain = document.getElementById(
-  "button-filter-location-terrain",
-);
+const filterCharacterGender = document.getElementById("button-filter-character-gender",);
+const filterCharacterSpecie = document.getElementById("button-filter-character-specie",);
+const filterLocationClimate = document.getElementById("button-filter-location-climate",);
+const filterLocationTerrain = document.getElementById("button-filter-location-terrain",);
 const inputSearch = document.getElementById("input-search");
+const header = document.querySelector("header");
+
+window.onscroll = scroll_listener;
+
+function scroll_listener() {
+  let scrollPosition = document.body.scrollTop || document.documentElement.scrollTop;
+  let maxHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  let totalScrolled = scrollPosition * 100 / maxHeight;
+  document.querySelector("#progress-bar span").style.width = totalScrolled + '%';
+}
+let prevY = window.scrollY;
+window.addEventListener("scroll", function () {
+  if (prevY > window.scrollY) {
+    header.classList.remove("off")
+  } else {
+    header.classList.add("off")
+  }
+  prevY = window.scrollY;
+});
+
 
 //Data recogida en un array
 const filmsData = data.films; //Variable que contiene la data del array 'films'.
@@ -52,13 +57,13 @@ data.films.forEach((element) => {
 peopleDataFiltered = peopleData;
 
 const vehiclesData = [];
-let vehiclesDataFiltered = [];
+//let vehiclesDataFiltered = [];
 data.films.forEach((element) => {
   element.vehicles.forEach((row) => {
     vehiclesData.push(row);
   });
 }); //Se repite el procedimiento anterior con los vehículos.
-vehiclesDataFiltered = vehiclesData;
+//vehiclesDataFiltered = vehiclesData;
 
 const locationsData = [];
 let locationsDataFiltered = [];
@@ -102,23 +107,25 @@ document.querySelectorAll("a[data-tab]").forEach((link) => {
       filterCharacterGender.style.display = "block";
       filterCharacterSpecie.style.display = "block";
       filterMovies.style.display = "block";
-
     } else {
       filterCharacterGender.style.display = "none";
       filterCharacterSpecie.style.display = "none";
       filterMovies.style.display = "none";
     }
-    if (tabName === "vehicles-big-container") {
-      filterVehicleClass.style.display = "block";
-    } else {
-      filterVehicleClass.style.display = "none";
-    }
+
     if (tabName === "locations-big-container") {
       filterLocationClimate.style.display = "block";
       filterLocationTerrain.style.display = "block";
     } else {
       filterLocationClimate.style.display = "none";
       filterLocationTerrain.style.display = "none";
+    }
+    if (tabName === "trivia-big-container") {
+      filter.style.display = "none";
+
+    } else {
+      filter.style.display = "block";
+
     }
   });
 });
@@ -128,50 +135,77 @@ createVehicles(vehiclesData);
 printDataCharacters(peopleData);
 createLocations(locationsData);
 
-//Index a home
-const sectionHome = document.getElementById("index");
-const sectionMovies = document.getElementById("movies");
-const enterButton = document.getElementById("action-enter");
 
-enterButton.addEventListener("click", function (event) {
-  event.preventDefault();
-  sectionHome.classList.remove("show");
-  sectionHome.classList.add("hidden");
-  sectionMovies.classList.remove("hidden");
-  sectionMovies.classList.add("show");
-  document.body.classList.remove("body-blue");
-});
-// Filtro Busqueda/Navegacion
-//se crea la variable inputSearch para hacer referencia al input (linea 13)
+
 //Se crea evento para "escuchar" cuando se ejecuta un keyup / con la variable tabActive capturamos el tab activo
 //con if le indicamos que si el tab activo es Movies, creamos/mostramos las movies bajo el parametro
 // - searchImport.searchFilmsByTitle(event.target.value, filmsData -
 // (searchImport) es una constante que fue importada desde data.js que ademas es una funcion (searchFilmsByTitle)
 // y a esa funcion le pasamos el valor que se captura del input text y films.Data (data event.target.value, filmsData)
 // filmsData puede variar dependiendo de la ubicacion del dato
+
 inputSearch.addEventListener("keyup", function (event) {
   const tabActive =
     document.querySelectorAll("a[data-tab].active")[0].innerText;
+  const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another word</strong> &#128269</p>`;
   if (tabActive === "Movies") {
-    createFilms(searchImport.searchFilmsByTitle(event.target.value, filmsData));
+    const moviesResult = searchImport.searchFilmsByTitle(
+      event.target.value,
+      filmsData,
+    );
+    const showNoResult = document.getElementById("root");
+    if (moviesResult.length === 0) {
+      showNoResult.style.display = "block";
+      showNoResult.innerHTML = noResults;
+    } else {
+      showNoResult.style.display = "grid";
+      createFilms(moviesResult);
+    }
     return;
   }
   if (tabActive === "Characters") {
-    printDataCharacters(
-      searchImport.searchCharacterByName(event.target.value, peopleData),
+    const charactersResult = searchImport.searchCharacterByName(
+      event.target.value,
+      peopleData,
     );
+    const showNoResult = document.getElementById("characters-small-container");
+    if (charactersResult.length === 0) {
+      showNoResult.style.display = "block";
+      showNoResult.innerHTML = noResults;
+    } else {
+      showNoResult.style.display = "grid";
+      printDataCharacters(charactersResult);
+    }
     return;
   }
   if (tabActive === "Vehicles") {
-    createVehicles(
-      searchImport.searchVehiclesByName(event.target.value, vehiclesData),
+    const vehiclesResult = searchImport.searchVehiclesByName(
+      event.target.value,
+      vehiclesData,
     );
+    const showNoResult = document.getElementById("vehicles-small-container");
+    if (vehiclesResult.length === 0) {
+      showNoResult.style.display = "block";
+      showNoResult.innerHTML = noResults;
+    } else {
+      showNoResult.style.display = "grid";
+      createVehicles(vehiclesResult);
+    }
     return;
   }
   if (tabActive === "Locations") {
-    createLocations(
-      searchImport.searchLocationsByName(event.target.value, locationsData),
+    const locationsResult = searchImport.searchLocationsByName(
+      event.target.value,
+      locationsData,
     );
+    const showNoResult = document.getElementById("locations-small-container");
+    if (locationsResult.length === 0) {
+      showNoResult.style.display = "block";
+      showNoResult.innerHTML = noResults;
+    } else {
+      showNoResult.style.display = "grid";
+      createLocations(locationsResult);
+    }
     return;
   }
 });
@@ -201,84 +235,164 @@ filterProducerDirector.addEventListener("change", function (event) {
 
 filterMovies.addEventListener("change", function (event) {
   if (filterMovies.selectedIndex > 1) {
-    peopleDataFiltered = filterImport.filterForMovies(filmsData, event.target.value)[0].people;
+    peopleDataFiltered = filterImport.filterForMovies(
+      filmsData,
+      event.target.value,
+    )[0].people;
   } else {
     peopleDataFiltered = peopleData;
   }
   if (filterCharacterGender.selectedIndex > 0) {
     peopleDataFiltered = filterImport.filterForCharacterGender(
-      peopleDataFiltered, filterCharacterGender.value
+      peopleDataFiltered,
+      filterCharacterGender.value,
     );
   }
   if (filterCharacterSpecie.selectedIndex > 0) {
     peopleDataFiltered = filterImport.filterForCharacterSpecie(
-      peopleDataFiltered, filterCharacterSpecie.value
+      peopleDataFiltered,
+      filterCharacterSpecie.value,
     );
   }
   if (filter.selectedIndex > 0) {
     const changeEvent = new Event("change");
     filter.dispatchEvent(changeEvent);
+  }
+  const showNoResult = document.getElementById("characters-small-container");
+  if (peopleDataFiltered.length === 0) {
+    const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+    showNoResult.style.display = "block";
+    showNoResult.innerHTML = noResults;
   } else {
+    showNoResult.style.display = "grid";
     printDataCharacters(peopleDataFiltered);
   }
 });
 
 filterCharacterGender.addEventListener("change", function (event) {
   if (filterMovies.selectedIndex > 1) {
-    peopleDataFiltered = filterImport.filterForMovies(filmsData, filterMovies.value)[0].people;
+    peopleDataFiltered = filterImport.filterForMovies(
+      filmsData,
+      filterMovies.value,
+    )[0].people;
   } else {
     peopleDataFiltered = peopleData;
   }
   if (filterCharacterSpecie.selectedIndex > 0) {
     peopleDataFiltered = filterImport.filterForCharacterSpecie(
-      peopleDataFiltered, filterCharacterSpecie.value
+      peopleDataFiltered,
+      filterCharacterSpecie.value,
     );
   }
-  peopleDataFiltered = filterImport.filterForCharacterGender(peopleDataFiltered, event.target.value);
+  peopleDataFiltered = filterImport.filterForCharacterGender(
+    peopleDataFiltered,
+    event.target.value,
+  );
   if (filter.selectedIndex > 0) {
     const changeEvent = new Event("change");
     filter.dispatchEvent(changeEvent);
+  }
+  const showNoResult = document.getElementById("characters-small-container");
+  if (peopleDataFiltered.length === 0) {
+    const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+    showNoResult.style.display = "block";
+    showNoResult.innerHTML = noResults;
   } else {
+    showNoResult.style.display = "grid";
     printDataCharacters(peopleDataFiltered);
   }
 });
 
 filterCharacterSpecie.addEventListener("change", function (event) {
   if (filterMovies.selectedIndex > 1) {
-    peopleDataFiltered = filterImport.filterForMovies(filmsData, filterMovies.value)[0].people;
+    peopleDataFiltered = filterImport.filterForMovies(
+      filmsData,
+      filterMovies.value,
+    )[0].people;
   } else {
     peopleDataFiltered = peopleData;
   }
   if (filterCharacterGender.selectedIndex > 0) {
     peopleDataFiltered = filterImport.filterForCharacterGender(
-      peopleDataFiltered, filterCharacterGender.value
+      peopleDataFiltered,
+      filterCharacterGender.value,
     );
   }
-  peopleDataFiltered = filterImport.filterForCharacterSpecie(peopleDataFiltered, event.target.value);
+  peopleDataFiltered = filterImport.filterForCharacterSpecie(
+    peopleDataFiltered,
+    event.target.value,
+  );
   if (filter.selectedIndex > 0) {
     const changeEvent = new Event("change");
     filter.dispatchEvent(changeEvent);
+  }
+  const showNoResult = document.getElementById("characters-small-container");
+  if (peopleDataFiltered.length === 0) {
+    const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+    showNoResult.style.display = "block";
+    showNoResult.innerHTML = noResults;
   } else {
+    showNoResult.style.display = "grid";
     printDataCharacters(peopleDataFiltered);
   }
 });
 
-filterVehicleClass.addEventListener("change", function (event) {
-  createVehicles(
-    filterImport.filterForVehicleClass(vehiclesData, event.target.value),
-  );
-});
-
 filterLocationClimate.addEventListener("change", function (event) {
-  createLocations(
-    filterImport.filterForLocationClimate(locationsData, event.target.value),
-  );
+  if (filterLocationClimate.selectedIndex > 1) {
+    locationsDataFiltered = filterImport.filterForLocationClimate(
+      locationsData,
+      event.target.value,
+    );
+  } else {
+    locationsDataFiltered = locationsData;
+  }
+  if (filterLocationTerrain.selectedIndex > 0) {
+    locationsDataFiltered = filterImport.filterForLocationTerrain(
+      locationsDataFiltered,
+      filterLocationTerrain.value,
+    );
+  }
+  if (filter.selectedIndex > 0) {
+    const changeEvent = new Event("change");
+    filter.dispatchEvent(changeEvent);
+  }
+  const showNoResult = document.getElementById("locations-small-container");
+  if (locationsDataFiltered.length === 0) {
+    const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+    showNoResult.style.display = "block";
+    showNoResult.innerHTML = noResults;
+  } else {
+    showNoResult.style.display = "grid";
+    createLocations(locationsDataFiltered);
+  }
 });
 
 filterLocationTerrain.addEventListener("change", function (event) {
-  createLocations(
-    filterImport.filterForLocationTerrain(locationsData, event.target.value),
+  if (filterLocationClimate.selectedIndex > 1) {
+    locationsDataFiltered = filterImport.filterForLocationClimate(
+      locationsData,
+      filterLocationClimate.value,
+    );
+  } else {
+    locationsDataFiltered = locationsData;
+  }
+  locationsDataFiltered = filterImport.filterForLocationTerrain(
+    locationsDataFiltered,
+    event.target.value,
   );
+  if (filter.selectedIndex > 0) {
+    const changeEvent = new Event("change");
+    filter.dispatchEvent(changeEvent);
+  }
+  const showNoResult = document.getElementById("locations-small-container");
+  if (locationsDataFiltered.length === 0) {
+    const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+    showNoResult.style.display = "block";
+    showNoResult.innerHTML = noResults;
+  } else {
+    showNoResult.style.display = "grid";
+    createLocations(locationsDataFiltered);
+  }
 });
 
 //DOM Ordenar
@@ -316,15 +430,44 @@ filter.addEventListener("change", function (event) {
 
 // se crean estas 2 funciones para desacoplar el listener del selector
 // y para saber en que pestaña se encuentra el usuario.
+/*function callOrderAZ(tabActive) {
+  //console.log(emptyLocationsArray);
+
+
+}*/
 function callOrderAZ(tabActive) {
   if (tabActive === "Movies") {
     createFilms(orderImport.sortAToZTitle(filmsDataFiltered, tabActive));
   } else if (tabActive === "Characters") {
-    printDataCharacters(orderImport.sortAToZTitle(peopleDataFiltered, tabActive));
+    const orderCharacters = orderImport.sortAToZTitle(
+      peopleDataFiltered,
+      tabActive,
+    );
+    const showNoResult = document.getElementById("characters-small-container");
+    if (orderCharacters.length === 0) {
+      const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+      showNoResult.style.display = "block";
+      showNoResult.innerHTML = noResults;
+    } else {
+      showNoResult.style.display = "grid";
+      printDataCharacters(orderCharacters);
+    }
   } else if (tabActive === "Vehicles") {
     createVehicles(orderImport.sortAToZTitle(vehiclesData, tabActive));
   } else {
-    createLocations(orderImport.sortAToZTitle(locationsData, tabActive));
+    const orderLocations = orderImport.sortAToZTitle(
+      locationsDataFiltered,
+      tabActive,
+    );
+    const showNoResult = document.getElementById("locations-small-container");
+    if (orderLocations.length === 0) {
+      const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+      showNoResult.style.display = "block";
+      showNoResult.innerHTML = noResults;
+    } else {
+      showNoResult.style.display = "grid";
+      createLocations(orderLocations);
+    }
   }
 }
 
@@ -332,11 +475,35 @@ function callOrderZA(tabActive) {
   if (tabActive === "Movies") {
     createFilms(orderImport.sortZToATitle(filmsDataFiltered, tabActive));
   } else if (tabActive === "Characters") {
-    printDataCharacters(orderImport.sortZToATitle(peopleDataFiltered, tabActive));
+    const orderCharacters = orderImport.sortZToATitle(
+      peopleDataFiltered,
+      tabActive,
+    );
+    const showNoResult = document.getElementById("characters-small-container");
+    if (orderCharacters.length === 0) {
+      const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+      showNoResult.style.display = "block";
+      showNoResult.innerHTML = noResults;
+    } else {
+      showNoResult.style.display = "grid";
+      printDataCharacters(orderCharacters);
+    }
   } else if (tabActive === "Vehicles") {
     createVehicles(orderImport.sortZToATitle(vehiclesData, tabActive));
   } else {
-    createLocations(orderImport.sortZToATitle(locationsData, tabActive));
+    const orderLocations = orderImport.sortZToATitle(
+      locationsDataFiltered,
+      tabActive,
+    );
+    const showNoResult = document.getElementById("locations-small-container");
+    if (orderLocations.length === 0) {
+      const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+      showNoResult.style.display = "block";
+      showNoResult.innerHTML = noResults;
+    } else {
+      showNoResult.style.display = "grid";
+      createLocations(orderLocations);
+    }
   }
 }
 
@@ -352,7 +519,6 @@ function callDateDesc(tabActive) {
   }
 }
 
-//Mostrar data ordenada en página
 function createFilms(films) {
   root.innerHTML = "";
   for (let i = 0; i < films.length; i++) {
@@ -405,4 +571,126 @@ function printDataCharacters(people) {
         <p><strong>Gender</strong>: ${people[i].gender}</p>
         </figure>`;
   }
+}
+
+
+function calcularDirectores() {
+  let directores = {};
+
+  filmsData.forEach(element => {
+    if (directores.hasOwnProperty(element.director)) {
+      directores[element.director].cantidad++;
+      directores[element.director].totalRtScore += parseFloat(element.rt_score);
+    } else {
+      directores[element.director] = {
+        cantidad: 1,
+        totalRtScore: parseFloat(element.rt_score)
+      };
+    }
+  });
+
+  return directores;
+}
+function calcularProducer() {
+  let producers = {}; // Cambiado de 'producer' a 'producers'
+
+  filmsData.forEach(element => {
+    if (producers.hasOwnProperty(element.producer)) {
+      producers[element.producer].cantidad++;
+      producers[element.producer].totalRtScore += parseFloat(element.rt_score);
+    } else {
+      producers[element.producer] = {
+        cantidad: 1,
+        totalRtScore: parseFloat(element.rt_score)
+      };
+    }
+  });
+
+  return producers;
+}
+
+
+google.charts.load("current", { packages: ["corechart", "bar"] });
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+  var directoresData = calcularDirectores();
+  var data = new google.visualization.DataTable();
+  data.addColumn('string');
+  data.addColumn('number', 'Films');
+  data.addColumn('number', '% Rating');
+
+  Object.keys(directoresData).forEach(director => {
+    var cantidad = directoresData[director].cantidad;
+    var totalRtScore = directoresData[director].totalRtScore;
+    var porcentajeRtScore = cantidad > 0 ? totalRtScore / cantidad : 0;
+    data.addRow([director, cantidad, porcentajeRtScore]);
+  });
+
+  var options = {
+    bars: { groupWidth: "50%" },
+    tooltip: { isHtml: true },
+    addColumn: { fontSize: 8 },
+    width: '100%',
+    heigth: '500px',
+    chartArea: {
+      'width': '50%'
+    },
+    title: 'Films por por Productor',
+    bars: 'horizontal',
+    axes: {
+      y: {
+        0: { side: 'right' }
+      }
+    },
+    bar: { groupWidth: "90%" }
+
+  };
+
+  var chart = new google.visualization.BarChart(
+    document.getElementById('director_chart_div'));
+
+  chart.draw(data, options);
+}
+
+google.charts.load("current", { packages: ["corechart", "bar"] });
+google.charts.setOnLoadCallback(drawProducerChart);
+
+function drawProducerChart() {
+  var producersData = calcularProducer(); // Llama a tu función para obtener los datos
+  var data = new google.visualization.DataTable();
+
+  data.addColumn('string', 'Productor');
+  data.addColumn('number', 'Films');
+  data.addColumn('number', '% Rating');
+
+  Object.keys(producersData).forEach(producer => {
+    var cantidad = producersData[producer].cantidad;
+    var totalRtScore = producersData[producer].totalRtScore;
+    var porcentajeRtScore = cantidad > 0 ? (totalRtScore / cantidad) : 0;
+    data.addRow([producer, cantidad, porcentajeRtScore]);
+  });
+
+  var options = {
+    bars: { groupWidth: "50%" },
+    tooltip: { isHtml: true },
+    addColumn: { fontSize: 8 },
+    width: '100%',
+    heigth: '500px',
+    chartArea: {
+      'width': '50%'
+    },
+    title: 'Films por por Productor',
+    bars: 'horizontal',
+    axes: {
+      y: {
+        0: { side: 'right' }
+      }
+    },
+    bar: { groupWidth: "90%" }
+
+  };
+
+  var chart = new google.visualization.BarChart(document.getElementById('productor_chart_div'));
+  chart.draw(data, options);
 }

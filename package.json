@@ -21,9 +21,8 @@
     "htmlhint": "^1.0.0",
     "jest": "^27.0.1",
     "opener": "^1.5.1",
-    "serve": "^14.2.0",
     "prettier": "^3.0.0",
-    "serve": "^13.0.2"
+    "serve": "^14.2.0"
   },
   "engines": {
     "node": ">=16.x"
@@ -34,6 +33,7 @@
     "commit": "4ea26447e1a259476f237a7a6212e3a02409910b"
   },
   "dependencies": {
-    "chart.js": "^4.3.2"
+    "@kurkle/color": "^0.3.2",
+    "chart.js": "^4.3.3"
   }
 }

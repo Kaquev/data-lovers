@@ -20,6 +20,9 @@ export const filterImport = {
   // el parametro type es para filtrar por productor o director, se captura desde cada option
   // seleccionada
   filterForProducersAndDirectors: (films, name, type) => {
+    if (!films) {
+      return [];
+    }
     if (name === "all" || name === "") {
       return films;
     }
@@ -34,7 +37,9 @@ export const filterImport = {
     }
   },
   filterForMovies: (films, movieTitle) => {
-    if (movieTitle === "all" || movieTitle === "") {
+    if (!films) {
+      return [];
+    } else if (movieTitle === "all" || movieTitle === "") {
       return films;
     } else {
       const dataFiltered = films.filter(function (film) {
@@ -44,7 +49,9 @@ export const filterImport = {
     }
   },
   filterForCharacterGender: (people, genders) => {
-    if (genders === "all" || genders === "") {
+    if (!people) {
+      return [];
+    } else if (genders === "all" || genders === "") {
       return people;
     } else {
       const dataFiltered = people.filter(function (person) {
@@ -54,7 +61,9 @@ export const filterImport = {
     }
   },
   filterForCharacterSpecie: (people, species) => {
-    if (species === "all" || species === "") {
+    if (!people) {
+      return [];
+    } else if (species === "all" || species === "") {
       return people;
     } else {
       const dataFiltered = people.filter(function (person) {
@@ -63,7 +72,7 @@ export const filterImport = {
       return dataFiltered;
     }
   },
-  filterForVehicleClass: (vehicles, classes) => {
+  /*filterForVehicleClass: (vehicles, classes) => {
     if (classes === "all" || classes === "") {
       return vehicles;
     } else {
@@ -72,9 +81,11 @@ export const filterImport = {
       });
       return dataFiltered;
     }
-  },
+  },*/
   filterForLocationClimate: (locations, climates) => {
-    if (climates === "all" || climates === "") {
+    if (!locations) {
+      return [];
+    } else if (climates === "all" || climates === "") {
       return locations;
     } else {
       const dataFiltered = locations.filter(function (location) {
@@ -84,11 +95,13 @@ export const filterImport = {
     }
   },
   filterForLocationTerrain: (locations, terrains) => {
-    if (terrains === "all" || terrains === "") {
+    if (!locations) {
+      return [];
+    } else if (terrains === "all" || terrains === "") {
       return locations;
     } else {
       const dataFiltered = locations.filter(function (location) {
-        return location.terrain === terrains;
+        return location.terrain.toLowerCase() === terrains.toLowerCase();
       });
       return dataFiltered;
     }
@@ -98,37 +111,61 @@ export const filterImport = {
 export const orderImport = {
   sortAToZTitle: (data, tabActive) => {
     if (tabActive === "Movies") {
-      return data.sort((a, b) => (a.title.toLowerCase() < b.title.toLowerCase() ? -1 : 1));
+      return data.sort((a, b) =>
+        a.title.toLowerCase() < b.title.toLowerCase() ? -1 : 1,
+      );
     } else if (tabActive === "Characters") {
-      return data.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
+      return data.sort((a, b) =>
+        a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1,
+      );
     } else if (tabActive === "Vehicles") {
-      return data.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
+      return data.sort((a, b) =>
+        a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1,
+      );
+    } else if (tabActive === "Locations") {
+      return data.sort((a, b) =>
+        a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1,
+      );
     } else {
-      return data.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
+      return [];
     }
   },
 
   sortZToATitle: (data, tabActive) => {
     if (tabActive === "Movies") {
-      return data.sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? -1 : 1));
+      return data.sort((a, b) =>
+        a.title.toLowerCase() > b.title.toLowerCase() ? -1 : 1,
+      );
     } else if (tabActive === "Characters") {
-      return data.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? -1 : 1));
+      return data.sort((a, b) =>
+        a.name.toLowerCase() > b.name.toLowerCase() ? -1 : 1,
+      );
     } else if (tabActive === "Vehicles") {
-      return data.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? -1 : 1));
+      return data.sort((a, b) =>
+        a.name.toLowerCase() > b.name.toLowerCase() ? -1 : 1,
+      );
+    } else if (tabActive === "Locations") {
+      return data.sort((a, b) =>
+        a.name.toLowerCase() > b.name.toLowerCase() ? -1 : 1,
+      );
     } else {
-      return data.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? -1 : 1));
+      return [];
     }
   },
 
   sortRDAsc: (data, tabActive) => {
     if (tabActive === "Movies") {
       return data.sort((a, b) => a.release_date - b.release_date);
+    } else {
+      return [];
     }
   },
 
   sortRDDesc: (data, tabActive) => {
     if (tabActive === "Movies") {
       return data.sort((a, b) => b.release_date - a.release_date);
+    } else {
+      return [];
     }
   },
 };
@@ -142,6 +179,9 @@ export const orderImport = {
 //Si no se cumple esta condicion, retornamos la data.
 export const searchImport = {
   searchFilmsByTitle: (searchString, data) => {
+    if (!data) {
+      return [];
+    }
     if (searchString.length > 2) {
       return data.filter((element) => {
         return element.title.toLowerCase().includes(searchString.toLowerCase());
@@ -150,6 +190,9 @@ export const searchImport = {
     return data;
   },
   searchCharacterByName: (searchString, data) => {
+    if (!data) {
+      return [];
+    }
     if (searchString.length > 2) {
       return data.filter((element) => {
         return element.name.toLowerCase().includes(searchString.toLowerCase());
@@ -158,6 +201,9 @@ export const searchImport = {
     return data;
   },
   searchVehiclesByName: (searchString, data) => {
+    if (!data) {
+      return [];
+    }
     if (searchString.length > 2) {
       return data.filter((element) => {
         return element.vehicle_class.toLowerCase().includes(searchString.toLowerCase());
@@ -166,6 +212,9 @@ export const searchImport = {
     return data;
   },
   searchLocationsByName: (searchString, data) => {
+    if (!data) {
+      return [];
+    }
     if (searchString.length > 2) {
       return data.filter((element) => {
         return element.name.toLowerCase().includes(searchString.toLowerCase());
