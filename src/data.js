@@ -206,7 +206,7 @@ export const searchImport = {
     }
     if (searchString.length > 2) {
       return data.filter((element) => {
-        return element.vehicle_class.toLowerCase().includes(searchString.toLowerCase());
+        return element.name.toLowerCase().includes(searchString.toLowerCase());
       });
     }
     return data;
@@ -223,3 +223,45 @@ export const searchImport = {
     return data;
   },
 };
+
+export const chartDirectors = {
+
+  calcularDirectores: (filmsData) => {
+    const directores = {};
+
+    filmsData.forEach(element => {
+      if ((element.director in directores)) {
+        directores[element.director].cantidad++;
+        directores[element.director].totalRtScore += parseFloat(element.rt_score);
+      } else {
+        directores[element.director] = {
+          cantidad: 1,
+          totalRtScore: parseFloat(element.rt_score)
+        };
+      }
+    });
+    return directores;
+  }
+}
+
+export const chartProducers = {
+
+  calcularProducer: (filmsData) => {
+    const producers = {};
+
+    filmsData.forEach(element => {
+      if ((element.producer in producers)) {
+        producers[element.producer].cantidad++;
+        producers[element.producer].totalRtScore += parseFloat(element.rt_score);
+      } else {
+        producers[element.producer] = {
+          cantidad: 1,
+          totalRtScore: parseFloat(element.rt_score)
+        };
+      }
+    });
+
+    return producers;
+  }
+
+}

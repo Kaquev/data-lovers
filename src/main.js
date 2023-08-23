@@ -4,7 +4,7 @@ import {
   filterImport,
   orderImport,
   actives,
-  searchImport,
+  searchImport, chartDirectors, chartProducers
 } from "./data.js";
 
 const root = document.getElementById("root");
@@ -14,34 +14,50 @@ const locationsRoot = document.getElementById("locations-small-container");
 const filter = document.getElementById("button-filter");
 const ascOption = document.getElementById("asc");
 const descOption = document.getElementById("desc");
-const filterProducerDirector = document.getElementById("button-filter-prodirect",);
-const filterProducerDirectorContainer = document.getElementById("container-filter-productors-directors",);
+const filterProducerDirector = document.getElementById(
+  "button-filter-prodirect",
+);
+const filterProducerDirectorContainer = document.getElementById(
+  "container-filter-productors-directors",
+);
 const filterMovies = document.getElementById("button-filter-movie");
-const filterCharacterGender = document.getElementById("button-filter-character-gender",);
-const filterCharacterSpecie = document.getElementById("button-filter-character-specie",);
-const filterLocationClimate = document.getElementById("button-filter-location-climate",);
-const filterLocationTerrain = document.getElementById("button-filter-location-terrain",);
+const filterCharacterGender = document.getElementById(
+  "button-filter-character-gender",
+);
+const filterCharacterSpecie = document.getElementById(
+  "button-filter-character-specie",
+);
+const filterLocationClimate = document.getElementById(
+  "button-filter-location-climate",
+);
+const filterLocationTerrain = document.getElementById(
+  "button-filter-location-terrain",
+);
 const inputSearch = document.getElementById("input-search");
 const header = document.querySelector("header");
+
 
 window.onscroll = scroll_listener;
 
 function scroll_listener() {
-  let scrollPosition = document.body.scrollTop || document.documentElement.scrollTop;
-  let maxHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-  let totalScrolled = scrollPosition * 100 / maxHeight;
-  document.querySelector("#progress-bar span").style.width = totalScrolled + '%';
+  const scrollPosition =
+    document.body.scrollTop || document.documentElement.scrollTop;
+  const maxHeight =
+    document.documentElement.scrollHeight -
+    document.documentElement.clientHeight;
+  const totalScrolled = (scrollPosition * 100) / maxHeight;
+  document.querySelector("#progress-bar span").style.width =
+    totalScrolled + "%";
 }
 let prevY = window.scrollY;
 window.addEventListener("scroll", function () {
   if (prevY > window.scrollY) {
-    header.classList.remove("off")
+    header.classList.remove("off");
   } else {
-    header.classList.add("off")
+    header.classList.add("off");
   }
   prevY = window.scrollY;
 });
-
 
 //Data recogida en un array
 const filmsData = data.films; //Variable que contiene la data del array 'films'.
@@ -122,10 +138,8 @@ document.querySelectorAll("a[data-tab]").forEach((link) => {
     }
     if (tabName === "trivia-big-container") {
       filter.style.display = "none";
-
     } else {
       filter.style.display = "block";
-
     }
   });
 });
@@ -134,8 +148,6 @@ createFilms(filmsData);
 createVehicles(vehiclesData);
 printDataCharacters(peopleData);
 createLocations(locationsData);
-
-
 
 //Se crea evento para "escuchar" cuando se ejecuta un keyup / con la variable tabActive capturamos el tab activo
 //con if le indicamos que si el tab activo es Movies, creamos/mostramos las movies bajo el parametro
@@ -358,7 +370,7 @@ filterLocationClimate.addEventListener("change", function (event) {
   }
   const showNoResult = document.getElementById("locations-small-container");
   if (locationsDataFiltered.length === 0) {
-    const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+    const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another</strong> &#128269</p>`;
     showNoResult.style.display = "block";
     showNoResult.innerHTML = noResults;
   } else {
@@ -386,7 +398,7 @@ filterLocationTerrain.addEventListener("change", function (event) {
   }
   const showNoResult = document.getElementById("locations-small-container");
   if (locationsDataFiltered.length === 0) {
-    const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+    const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another</strong> &#128269</p>`;
     showNoResult.style.display = "block";
     showNoResult.innerHTML = noResults;
   } else {
@@ -403,7 +415,8 @@ filterLocationTerrain.addEventListener("change", function (event) {
 // Target es atributo de select al igual que value, los que capturan el valor
 
 filter.addEventListener("change", function (event) {
-  const tabActive = document.querySelectorAll("a[data-tab].active")[0].innerText;
+  const tabActive =
+    document.querySelectorAll("a[data-tab].active")[0].innerText;
   if (event.target.value === "") {
     // si el valor que obtengo es "nada"
     // validar que debemos hacer cuando no seleccione nada
@@ -461,7 +474,7 @@ function callOrderAZ(tabActive) {
     );
     const showNoResult = document.getElementById("locations-small-container");
     if (orderLocations.length === 0) {
-      const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+      const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another</strong> &#128269</p>`;
       showNoResult.style.display = "block";
       showNoResult.innerHTML = noResults;
     } else {
@@ -497,7 +510,7 @@ function callOrderZA(tabActive) {
     );
     const showNoResult = document.getElementById("locations-small-container");
     if (orderLocations.length === 0) {
-      const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another filter</strong> &#128269</p>`;
+      const noResults = `<p style = "font-size: large;">No results found, you should try with <strong>another</strong> &#128269</p>`;
       showNoResult.style.display = "block";
       showNoResult.innerHTML = noResults;
     } else {
@@ -528,7 +541,7 @@ function createFilms(films) {
             <p>${films[i].description}</p>
             <br>
             <p>Director: <b>${films[i].director}</b></p> 
-            <p>Productor: <b>${films[i].producer}</b></p> 
+            <p>Producer: <b>${films[i].producer}</b></p> 
         </div>
         <img src="${films[i].poster}" alt="${films[i].title}" />
         <figcaption>${films[i].title}</figcaption> 
@@ -567,130 +580,97 @@ function printDataCharacters(people) {
         <figcaption>${people[i].name}</figcaption>
         <hr>
         <p><strong>Age</strong>:  ${people[i].age}</p>
-        <p><strong>Specie</strong>: ${people[i].specie}</p>
+        <p><strong>Species</strong>: ${people[i].specie}</p>
         <p><strong>Gender</strong>: ${people[i].gender}</p>
         </figure>`;
   }
 }
 
-
-function calcularDirectores() {
-  let directores = {};
-
-  filmsData.forEach(element => {
-    if (directores.hasOwnProperty(element.director)) {
-      directores[element.director].cantidad++;
-      directores[element.director].totalRtScore += parseFloat(element.rt_score);
-    } else {
-      directores[element.director] = {
-        cantidad: 1,
-        totalRtScore: parseFloat(element.rt_score)
-      };
-    }
-  });
-
-  return directores;
-}
-function calcularProducer() {
-  let producers = {}; // Cambiado de 'producer' a 'producers'
-
-  filmsData.forEach(element => {
-    if (producers.hasOwnProperty(element.producer)) {
-      producers[element.producer].cantidad++;
-      producers[element.producer].totalRtScore += parseFloat(element.rt_score);
-    } else {
-      producers[element.producer] = {
-        cantidad: 1,
-        totalRtScore: parseFloat(element.rt_score)
-      };
-    }
-  });
-
-  return producers;
-}
-
-
+// eslint-disable-next-line no-undef
 google.charts.load("current", { packages: ["corechart", "bar"] });
+// eslint-disable-next-line no-undef
 google.charts.setOnLoadCallback(drawBasic);
 
 function drawBasic() {
-  var directoresData = calcularDirectores();
-  var data = new google.visualization.DataTable();
-  data.addColumn('string');
-  data.addColumn('number', 'Films');
-  data.addColumn('number', '% Rating');
+  const directoresData = chartDirectors.calcularDirectores(filmsData);
+  // eslint-disable-next-line no-undef
+  const data = new google.visualization.DataTable();
+  data.addColumn("string");
+  data.addColumn("number", "Films");
+  data.addColumn("number", "% Rating");
 
-  Object.keys(directoresData).forEach(director => {
-    var cantidad = directoresData[director].cantidad;
-    var totalRtScore = directoresData[director].totalRtScore;
-    var porcentajeRtScore = cantidad > 0 ? totalRtScore / cantidad : 0;
+  Object.keys(directoresData).forEach((director) => {
+    const cantidad = directoresData[director].cantidad;
+    const totalRtScore = directoresData[director].totalRtScore;
+    const porcentajeRtScore = cantidad > 0 ? totalRtScore / cantidad : 0;
     data.addRow([director, cantidad, porcentajeRtScore]);
   });
 
-  var options = {
-    bars: { groupWidth: "50%" },
+  const options = {
     tooltip: { isHtml: true },
     addColumn: { fontSize: 8 },
-    width: '100%',
-    heigth: '500px',
+    width: "100%",
+    heigth: "500px",
     chartArea: {
-      'width': '50%'
+      width: "50%",
     },
-    title: 'Films por por Productor',
-    bars: 'horizontal',
+    title: "Films by Director",
+    bars: "horizontal",
     axes: {
       y: {
-        0: { side: 'right' }
-      }
+        0: { side: "right" },
+      },
     },
-    bar: { groupWidth: "90%" }
-
+    bar: { groupWidth: "90%" },
   };
-
-  var chart = new google.visualization.BarChart(
-    document.getElementById('director_chart_div'));
+  // eslint-disable-next-line no-undef
+  const chart = new google.visualization.BarChart(
+    document.getElementById("director_chart_div"),
+  );
 
   chart.draw(data, options);
 }
 
+// eslint-disable-next-line no-undef
 google.charts.load("current", { packages: ["corechart", "bar"] });
+// eslint-disable-next-line no-undef
 google.charts.setOnLoadCallback(drawProducerChart);
 
 function drawProducerChart() {
-  var producersData = calcularProducer(); // Llama a tu función para obtener los datos
-  var data = new google.visualization.DataTable();
+  const producersData = chartProducers.calcularProducer(filmsData);
+  // eslint-disable-next-line no-undef
+  const data = new google.visualization.DataTable();
 
-  data.addColumn('string', 'Productor');
-  data.addColumn('number', 'Films');
-  data.addColumn('number', '% Rating');
+  data.addColumn("string", "Productor");
+  data.addColumn("number", "Films");
+  data.addColumn("number", "% Rating");
 
-  Object.keys(producersData).forEach(producer => {
-    var cantidad = producersData[producer].cantidad;
-    var totalRtScore = producersData[producer].totalRtScore;
-    var porcentajeRtScore = cantidad > 0 ? (totalRtScore / cantidad) : 0;
+  Object.keys(producersData).forEach((producer) => {
+    const cantidad = producersData[producer].cantidad;
+    const totalRtScore = producersData[producer].totalRtScore;
+    const porcentajeRtScore = cantidad > 0 ? totalRtScore / cantidad : 0;
     data.addRow([producer, cantidad, porcentajeRtScore]);
   });
 
-  var options = {
-    bars: { groupWidth: "50%" },
+  const options = {
     tooltip: { isHtml: true },
     addColumn: { fontSize: 8 },
-    width: '100%',
-    heigth: '500px',
+    width: "100%",
+    heigth: "500px",
     chartArea: {
-      'width': '50%'
+      width: "50%",
     },
-    title: 'Films por por Productor',
-    bars: 'horizontal',
+    title: "Films by Producer",
+    bars: "horizontal",
     axes: {
       y: {
-        0: { side: 'right' }
-      }
+        0: { side: "right" },
+      },
     },
-    bar: { groupWidth: "90%" }
-
+    bar: { groupWidth: "90%" },
   };
 
-  var chart = new google.visualization.BarChart(document.getElementById('productor_chart_div'));
-  chart.draw(data, options);
+  // eslint-disable-next-line no-undef
+  const chartProducer = new google.visualization.BarChart(document.getElementById('productor_chart_div'));
+  chartProducer.draw(data, options);
 }
